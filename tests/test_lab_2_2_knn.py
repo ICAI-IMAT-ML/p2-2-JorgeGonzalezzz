@@ -2,7 +2,9 @@ import pytest
 import numpy as np
 from src.Lab_2_2_kNN import *
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
+
 
 # Test Minkowski Distance
 def test_minkowski_distance():
