@@ -347,7 +347,7 @@ def plot_calibration_curve(y_true, y_probs, positive_label, n_bins=10):
 
     true_proportions = []
     for i in range(n_bins):
-        bin_filtro = bin_indices == i
+        bin_filtro = bin_indices == i  # filtrar los índices
 
         if np.any(bin_filtro):  # Si hay alguno devuelve la fracción de positivos
             true_proportions.append(np.mean(y_true[bin_filtro]))
