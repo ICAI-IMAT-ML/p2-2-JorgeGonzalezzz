@@ -127,7 +127,7 @@ class knn:
             np.ndarray: distance from point to each point in the training dataset.
         """
         distances = [
-            [minkowski_distance(point, self.x_train[i], self.p)]
+            minkowski_distance(point, self.x_train[i], self.p)
             for i in range(self.x_train.shape[0])
         ]
         return np.array(distances)
@@ -147,6 +147,7 @@ class knn:
 
         sorted_index = np.argsort(distances)
         ksorted_index = sorted_index[: self.k]
+
         return ksorted_index
 
     def most_common_label(self, knn_labels: np.ndarray) -> int:  # 3
@@ -163,7 +164,9 @@ class knn:
 
         else:
             labels, count = np.unique(knn_labels, return_counts=True)
+
             max_label = labels[np.argmax(count)]
+
             return int(max_label)
 
     def __str__(self):
@@ -357,6 +360,21 @@ def plot_calibration_curve(y_true, y_probs, positive_label, n_bins=10):
     bin_centers = np.array(bin_centers)
     true_proportions = np.array(true_proportions)
 
+    # Gráfico
+    plt.figure(figsize=(6, 6))
+    plt.plot(
+        [0, 1], [0, 1], linestyle="--", color="gray", label="Perfectly calibrated"
+    )  # Línea ideal y=x
+    plt.scatter(
+        bin_centers, true_proportions, color="red", label="Model calibration"
+    )  # Puntos de la curva
+    plt.xlabel("Mean predicted probability")
+    plt.ylabel("Fraction of positives")
+    plt.title("Calibration Curve")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
     return {"bin_centers": bin_centers, "true_proportions": true_proportions}
 
 
@@ -387,6 +405,29 @@ def plot_probability_histograms(y_true, y_probs, positive_label, n_bins=10):
     """
     # Map string labels to 0 or 1
     y_true_mapped = np.array([1 if label == positive_label else 0 for label in y_true])
+
+    # Gráfico
+    plt.figure(figsize=(7, 5))
+    plt.hist(
+        y_probs[y_true_mapped == 1],
+        bins=n_bins,
+        alpha=0.5,
+        color="red",
+        label="Positive class",
+    )
+    plt.hist(
+        y_probs[y_true_mapped == 0],
+        bins=n_bins,
+        alpha=0.5,
+        color="blue",
+        label="Negative class",
+    )
+    plt.xlabel("Predicted probability")
+    plt.ylabel("Count")
+    plt.title("Probability Distribution by Class")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
     return {
         "array_passed_to_histogram_of_positive_class": y_probs[y_true_mapped == 1],
@@ -442,5 +483,16 @@ def plot_roc_curve(y_true, y_probs, positive_label):
 
         tpr.append(tp / (tp + fn) if (tp + fn) != 0 else 0)
         fpr.append(fp / (fp + tn) if (fp + tn) != 0 else 0)
+
+    # Gráfico
+    plt.figure(figsize=(6, 6))
+    plt.plot(fpr, tpr, marker="o", linestyle="-", color="red", label="ROC Curve")
+    plt.plot([0, 1], [0, 1], linestyle="--", color="gray", label="Random Classifier")
+    plt.xlabel("False Positive Rate (FPR)")
+    plt.ylabel("True Positive Rate (TPR)")
+    plt.title("Receiver Operating Characteristic (ROC) Curve")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
     return {"fpr": np.array(fpr), "tpr": np.array(tpr)}
